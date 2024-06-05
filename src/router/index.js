@@ -24,7 +24,15 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Following.vue')
-    }
+    },
+    {
+      path: '/',
+      name: 'repo-list',
+      component: () => import('../components/Repo.vue')    },
+    {
+      path: '/repo/:username/:repoName',
+      name: 'repo-detail',
+      component: () => import('../components/RepoDetail.vue')    },
   ]
 })
 

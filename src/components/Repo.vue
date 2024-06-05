@@ -39,9 +39,8 @@
       try {
         console.log('Fetching repositories...');
         const response = await fetch('https://api.github.com/users/jennykut12/repos');
-        console.log('Response:', response);
+        console.log('Response status:', response.status);
         if (!response.ok) {
-            console.error('Response not OK', response.status);
           if (response.status === 404) {
             this.error = 'Error 404: Not Found';
           } else if (response.status === 403) {
@@ -59,7 +58,21 @@
       } catch (error) {
         this.error = 'An unexpected error occurred.';
         console.error('Error fetching repositories:', error);
+        this.repos = []; // Clear repos to prevent displaying old data
       }
+    },
+    handleSearch() {
+      this.currentPage = 1; // Reset to first page on new search
+      const filteredRepos = this.filteredRepos;
+
+      if (filteredRepos.length === 0) {
+        this.error = 'No repositories found for the given search term.';
+      } else {
+        this.error = null;
+      }
+    },
+    viewRepoDetail(repo) {
+      this.$router.push({ name: 'repo-detail', params: { username: repo.owner.login, repoName: repo.name } });
     },
       nextPage() {
         if (this.currentPage < this.totalPages) {
@@ -76,20 +89,21 @@
   </script>
 
 <template>
-    <div>
+    <div class="searchdiv">
       <h1>Search GitHub Repositories</h1>
-      <input type="text" v-model="searchTerm" placeholder="Search for a repository..." />
+      <input class="search" type="text" v-model="searchTerm" @input="handleSearch" placeholder="Search for a repository..." />
       
-      <div v-if="error">
-      <p>{{ error }}</p>
+      <div class="error" v-if="error">
+      <p >{{ error }}</p>
     </div>
 
-      <div class="repo" v-else-if="paginatedRepos.length">
-        <RepoItem v-for="repo in paginatedRepos" :key="repo.id" :repo="repo" />
-      </div>
-      <div v-else>
-        <p>Loading...</p>
-      </div>
+    <div class="repo" v-else-if="paginatedRepos.length">
+      <RepoItem v-for="repo in paginatedRepos" :key="repo.id" :repo="repo" />
+    </div>
+
+    <div  v-else>
+      <p v-if="repos.length === 0 && !error">Loading...</p>
+    </div>
       
       <div class="repo" v-if="filteredRepos.length && !error">
         <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
@@ -102,7 +116,32 @@
 
   .repo{
     display: flex;
-    justify-content: space-evenly;
+    gap: 40px;
+  }
+  .searchdiv{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+
+  }
+  .search{
+    width: 40vw;
+    padding: 20px 10px;
+    font-size: 18px;
+  }
+  .error{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 34px;
+    font-weight: bolder;
+    padding: 40px 190px;
+    color: hsla(160, 100%, 37%, 1);
+
   }
   input {
     padding: 10px;
