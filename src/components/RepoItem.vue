@@ -7,12 +7,21 @@
       <p class="description">{{ repo.description }}</p>
       <p><strong>Stars:</strong> {{ repo.stargazers_count }}</p>
       <p><strong>Forks:</strong> {{ repo.forks_count }}</p>
-      <a :href="repo.html_url" target="_blank">View Repository</a>
+        <router-link :to="{ name: 'repo-detail', params: { username: repo.owner.login, repoName: repo.name } }">
+            <div class="view">
+
+            <p class="description">
+                View Repository
+            </p>
+    </div>
+</router-link>
+      <!-- <a :href="repo.html_url" target="_blank">View Repository</a> -->
     </div>
   </template>
   
   <script>
   export default {
+    // props: ['repo'],
     props: {
       repo: Object,
     },
@@ -20,6 +29,16 @@
   </script>
   
   <style scoped>
+  .view{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 2px solid hsla(160, 100%, 37%, 1);
+    width: 20vw;
+    height: 7vh;
+    border-radius: 20px;
+  }
   .repo-card {
     border: 2px solid hsla(160, 100%, 37%, 1);
     padding: 20px;
